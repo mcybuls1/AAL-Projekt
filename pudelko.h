@@ -12,7 +12,7 @@ public:
     int getD();
     int getH();
 
-private:
+//private:
     int x;
     int y;
     int z;
