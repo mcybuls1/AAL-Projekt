@@ -24,6 +24,7 @@ int main()
 {
     int czyKrokowo;
     int skadCzytamyDane;
+    int bok;
     string nazwaPliku;
     cout << "W jaki sposób załadować dane?" << endl;
     cout << "1 - z pliku; 2 - wygenerowac" << endl;
@@ -52,7 +53,12 @@ int main()
         }
 
         kontener.wyswietlPudelka();
-        cout << "Bok podstawy: " << kontener.ustawBokPodstawy() << endl;
+        cout << "Proszę podać długość boku podstawy (większą lub" <<  endl << "równą najdłuższemu bokowi zadanych pudełek)" << endl;
+        cin >> bok;
+        while(kontener.ustawBokPodstawy(bok) == 0)
+        {
+            cin >> bok;
+        }
     }
     else
     {
@@ -63,15 +69,29 @@ int main()
         kontener.wyswietlPudelka();
         cout << "Czy wykonać krokowo?" << endl << "0 - nie; 1 - tak" << endl;
         cin >> czyKrokowo;
-        cout << endl <<"Bok podstawy: " << kontener.ustawBokPodstawy() << endl;
+        cout << "Proszę podać długość boku podstawy (większą lub" <<  endl << "równą najdłuższemu bokowi zadanych pudełek)" << endl;
+        cin >> bok;
+        while(kontener.ustawBokPodstawy(bok) == 0)
+        {
+            cin >> bok;
+        }
     }
     clock_t czasStart = clock();
-//    for (int i = 0; i < 300000000; i++);
-    //cout << "Wysokosc wg gilotyny: " << kontener.gilotynowyAlgorytm() << endl;
-    cout << "Wysokosc wg FFDH: " << kontener.prostyAlgorytm(czyKrokowo) << endl;
-    float czasWykonania = ((float)clock() - czasStart)/CLOCKS_PER_SEC;
-    cout << "Czas wykonania: " << czasWykonania << " sec"<< endl;
 
+//    cout << "Wysokosc wg prostego: " << kontener.trywialnyAlgorytm() << endl;
+    cout << "Wysokosc wg drzewa przeszukiwań: " << kontener.drzewoPrzeszukiwan() << endl;
+    kontener.zapiszDoPliku(kontener.dajRezultatDrzewa());
+    float czasWykonania = ((float)clock() - czasStart)/CLOCKS_PER_SEC;
+    cout << "Czas wykonania: " << czasWykonania << " sec"<< endl << endl;
+
+    getchar();
+    getchar();
+    czasStart = clock();
+
+    cout << "Wysokosc wg FFDH: " << kontener.nextFitDecreasingHeight(czyKrokowo) << endl;
+    kontener.zapiszDoPliku(kontener.dajRezultatNFDH());
+    czasWykonania = ((float)clock() - czasStart)/CLOCKS_PER_SEC;
+    cout << "Czas wykonania: " << czasWykonania << " sec"<< endl;
     return 0;
 }
 

@@ -22,19 +22,3 @@ std::string Pudelko::toString()
     toString += h;
     return toString;
 }
-
-int Pudelko::getW()
-{
-    return w;
-}
-
-int Pudelko::getD()
-{
-    return d;
-}
-
-int Pudelko::getH()
-{
-    return h;
-}
-

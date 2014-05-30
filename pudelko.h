@@ -8,9 +8,6 @@ public:
     Pudelko();
     Pudelko(int w, int d, int h);
     std::string toString();
-    int getW();
-    int getD();
-    int getH();
 
 //private:
     int x;
