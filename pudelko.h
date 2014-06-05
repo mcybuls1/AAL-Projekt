@@ -1,18 +1,18 @@
 #ifndef PUDELKO_H
 #define PUDELKO_H
 #include <string>
+#include <vector>
 
 class Pudelko
 {
 public:
     Pudelko();
     Pudelko(int w, int d, int h);
-    std::string toString();
+    std::vector<Pudelko> rotacje();
 
-//private:
     int x;
-    int y;
     int z;
+    int y;
     int w; //szerokosc
     int d; //glebokosc
     int h; //wysokosc

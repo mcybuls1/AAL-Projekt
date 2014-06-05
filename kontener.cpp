@@ -80,25 +80,22 @@ bool jakSortowac(Pudelko i, Pudelko j)
 }
 
 /**
- * @brief Kontener::prostyAlgorytm
- * Sposób opierający się na First Fit Decreasing Height
+ * @brief Kontener::nextFitDecreasingHeight
+ * Sposób opierający się na Next Fit Decreasing Height
+ * @return uzyskaną wysokość
  */
 double Kontener::nextFitDecreasingHeight(int czyKrokowo)
 {
     std::vector<Pudelko> pakowanePudelka = PudelkadDoZapakowania;
     sort(pakowanePudelka.begin(), pakowanePudelka.end(), jakSortowac);
-    /*
-    for (unsigned int i = 0; i < pakowanePudelka.size(); ++i) {
-       std::cout << pakowanePudelka.at(i).getW() << " " << pakowanePudelka.at(i).getD() << " " << pakowanePudelka.at(i).getH() << std::endl;
-    }*/
+
     std::vector<int> wysokosciPlatform;
     wysokosciPlatform.push_back(0);
     while(pakowanePudelka.size() > 0)
     {
-
         int y = wysokosciPlatform.back();
         wysokosciPlatform.push_back(pakowanePudelka.back().h + wysokosciPlatform.back());
-        //std::cout << "h: " << wysokosciPlatform.back() << std::endl;
+
         //Robimy platforme i wypelniamy ja
         std::vector<Pudelko> obecnaPlatforma;
 
@@ -119,7 +116,6 @@ double Kontener::nextFitDecreasingHeight(int czyKrokowo)
                 if (pakowane.x + pakowane.w > bokPodstawy)
                 {
                     //sprawdzic najwyzszy na podstawie
-//                    std::cout << "Nie miesci sie horyzontalnie | ";
                     pakowane.x = 0;
                     pakowane.z = 0;
                     for (unsigned int i = 0; i < obecnaPlatforma.size(); ++i)
@@ -132,7 +128,6 @@ double Kontener::nextFitDecreasingHeight(int czyKrokowo)
                 if(pakowane.z + pakowane.d > bokPodstawy)
                 {
                     wstawiono = false;
-//                    std::cout << "Nie miesci sie wysokosciowo | ";
                     break;
                 }
             }
@@ -141,33 +136,54 @@ double Kontener::nextFitDecreasingHeight(int czyKrokowo)
 
             if(czyKrokowo != 0)
             {
+                std::cout << "x= " << pakowane.x << " (" << pakowane.w << ") z= " << pakowane.z << " (" << pakowane.d <<
+                          ") y= " << pakowane.y << " (" << pakowane.h << ")" << std::endl;
                 std::getchar();
             }
             //zdjecie z pakowanych i wrzucenie do zapakowanych
             rezultatNFDH.push_back(pakowane);
             obecnaPlatforma.push_back(pakowane);
-            std::cout << "x= " << pakowane.x << " (" << pakowane.w << ") z= " << pakowane.z << " (" << pakowane.d <<
-                         ") y= " << pakowane.y << " (" << pakowane.h << ")" << std::endl;
+
             pakowanePudelka.pop_back();
         }//while
     }
+
     std::cout << "% wypelnienia: " << (objetoscPudelek() / (bokPodstawy * bokPodstawy * wysokosciPlatform.back())) * 100 << std::endl;
     return wysokosciPlatform.back();
 }
-
-double Kontener::trywialnyAlgorytm()
+/**
+ * @brief Kontener::trywialnyAlgorytm
+ * @param czyKrokowo
+ * @return uzyskaną wysokość
+ */
+double Kontener::trywialnyAlgorytm(int czyKrokowo)
 {
     double dlugosc = 0;
-    for (unsigned int i = 0; i < PudelkadDoZapakowania.size(); ++i) {
-        Pudelko pudelko = PudelkadDoZapakowania.at(i);
-        int wysokosc = pudelko.w;
-        if (wysokosc > pudelko.h) {
-            wysokosc = pudelko.h;
-        } else if(wysokosc > pudelko.w) {
-            wysokosc = pudelko.w;
+    Pudelko pierwsze = PudelkadDoZapakowania[0];
+    pierwsze.x = 0;
+    pierwsze.y = 0;
+    pierwsze.z = 0;
+    rezultatTrywialnego.push_back(pierwsze);
+
+    for (unsigned int i = 1; i < PudelkadDoZapakowania.size(); ++i)
+    {
+        Pudelko pakowane = PudelkadDoZapakowania[i];
+        pakujNaroznikami(pakowane, rezultatTrywialnego);
+        rezultatTrywialnego.push_back(pakowane);
+        if(czyKrokowo != 0)
+        {
+            std::cout << "x= " << pakowane.x << " (" << pakowane.w << ") z= " << pakowane.z << " (" << pakowane.d <<
+                      ") y= " << pakowane.y << " (" << pakowane.h << ")" << std::endl;
+            std::getchar();
         }
-        dlugosc += wysokosc;
     }
+    for (unsigned int i = 0; i < rezultatTrywialnego.size(); ++i)
+    {
+       Pudelko bierzace = rezultatTrywialnego[i];
+       if(bierzace.y + bierzace.h > dlugosc)
+           dlugosc = bierzace.y + bierzace.h;
+    }
+
     std::cout << "% wypelnienia: " << (objetoscPudelek() / (bokPodstawy * bokPodstawy * dlugosc)) * 100 << std::endl;
     return dlugosc;
 }
@@ -178,7 +194,7 @@ double Kontener::objetoscPudelek()
     for (unsigned int i = 0; i < PudelkadDoZapakowania.size(); ++i) {
         objetosc += PudelkadDoZapakowania[i].w * PudelkadDoZapakowania[i].h * PudelkadDoZapakowania[i].d;
     }
-//    std::cout << objetosc;
+
     return objetosc;
 }
 
@@ -202,9 +218,9 @@ void Kontener::zapiszDoPliku(std::vector<Pudelko> doPliku)
        NowyPlik << "<width>" << cuboid.w << "</width>" << std::endl;
        NowyPlik << "<height>" << cuboid.h << "</height>" << std::endl;
        NowyPlik << "<depth>" << cuboid.d << "</depth>" << std::endl;
-       NowyPlik << "<x>" << cuboid.x + cuboid.w/2 << "</x>" << std::endl;
-       NowyPlik << "<y>" << cuboid.y + cuboid.h/2 << "</y>" << std::endl;
-       NowyPlik << "<z>" << cuboid.z + cuboid.d/2 << "</z>" << std::endl;
+       NowyPlik << "<x>" << (float)(cuboid.x + (float)cuboid.w/2) << "</x>" << std::endl;
+       NowyPlik << "<y>" << (float)(cuboid.y + (float)cuboid.h/2) << "</y>" << std::endl;
+       NowyPlik << "<z>" << (float)(cuboid.z + (float)cuboid.d/2) << "</z>" << std::endl;
        NowyPlik << "</cuboid>" << std::endl;
     }
     NowyPlik << "<base class_id=\"1\" tracking_level=\"0\" version=\"0\">" << std::endl;
@@ -217,8 +233,8 @@ void Kontener::zapiszDoPliku(std::vector<Pudelko> doPliku)
 
 void Kontener::rekurencja(int nrDoZapakowania, std::vector<Pudelko> doZapakowania, std::vector<Pudelko> zapakowane)
 {
-//    std::cout << "Rekurencja" << std::endl;
     Pudelko pakowane = doZapakowania[nrDoZapakowania];
+
 
     //Pierwsze
 
@@ -239,88 +255,7 @@ void Kontener::rekurencja(int nrDoZapakowania, std::vector<Pudelko> doZapakowani
     else
     {
         //wyznacz pozycje do zapakowania
-        Pudelko poprzedzajace = zapakowane.back();
-
-        //Poprzedni w lewym dolnym rogu
-        if(poprzedzajace.x == 0 && poprzedzajace.z == 0)
-        {
-            //nie miesci sie - wstawione na kolejny poziom
-            if(poprzedzajace.d + pakowane.d > bokPodstawy)
-            {
-                pakowane.x = 0;
-                pakowane.z = 0;
-                pakowane.y = poprzedzajace.y + poprzedzajace.h;
-            }
-            //miesci sie
-            else
-            {
-            pakowane.x = 0;
-            pakowane.z = bokPodstawy - pakowane.d;
-            pakowane.y = poprzedzajace.y;
-            }
-        }
-        //Poprzedni w lewym górnym rogu
-        else if(poprzedzajace.x == 0)
-        {
-            //nie miesci sie - wstawione na kolejny poziom
-            if(poprzedzajace.w + pakowane.w > bokPodstawy ||
-                    zapakowane[zapakowane.size() - 2].w + pakowane.w > bokPodstawy ||
-                    zapakowane[zapakowane.size() - 2].d + pakowane.d > bokPodstawy)
-            {
-                pakowane.x = 0;
-                pakowane.z = 0;
-                if(poprzedzajace.h < zapakowane[zapakowane.size() - 2].h)
-                {
-                    pakowane.y = poprzedzajace.y + zapakowane[zapakowane.size() - 2].h;
-                }
-                else
-                {
-                    pakowane.y = poprzedzajace.y + poprzedzajace.h;
-                }
-            }
-            //miesci sie
-            else
-            {
-                pakowane.x = bokPodstawy - pakowane.w;
-                pakowane.z = bokPodstawy - pakowane.d;
-                pakowane.y = poprzedzajace.y;
-            }
-        }
-        //Poprzedni w prawym górnym rogu
-        else if(poprzedzajace.z != 0)
-        {
-            //nie miesci sie - wstawione na kolejny poziom
-            if(poprzedzajace.d + pakowane.d > bokPodstawy ||
-                    zapakowane[zapakowane.size() - 2].w + pakowane.w > bokPodstawy ||
-                    zapakowane[zapakowane.size() - 2].d + pakowane.d > bokPodstawy ||
-                    zapakowane[zapakowane.size() - 3].w + pakowane.w > bokPodstawy)
-            {
-                pakowane.x = 0;
-                pakowane.z = 0;
-                pakowane.y = poprzedzajace.y;
-                int wysokosc = 0;
-                for(unsigned int i = zapakowane.size() - 3; i < zapakowane.size(); ++i)
-                {
-                    if(wysokosc < zapakowane[i].h)
-                        wysokosc = zapakowane[i].h;
-                }
-                pakowane.y += wysokosc;
-            }
-        }
-        //Poprzedni w prawym dolnym rogu - przechodze na kolejny poziom
-        else
-        {
-            pakowane.x = 0;
-            pakowane.z = 0;
-            pakowane.y = poprzedzajace.y;
-            int wysokosc = 0;
-            for(unsigned int i = zapakowane.size() - 4; i < zapakowane.size(); ++i)
-            {
-                if(wysokosc < zapakowane[i].h)
-                    wysokosc = zapakowane[i].h;
-            }
-            pakowane.y += wysokosc;
-        }
+        pakujNaroznikami(pakowane, zapakowane);
 
         //dodaj do zapakowanych i usun z do zapakowania
         zapakowane.push_back(pakowane);
@@ -357,8 +292,103 @@ void Kontener::rekurencja(int nrDoZapakowania, std::vector<Pudelko> doZapakowani
 
 }
 
+void Kontener::pakujNaroznikami(Pudelko &pakowane, std::vector<Pudelko> &zapakowane)
+{
+    Pudelko poprzedzajace = zapakowane.back();
+
+    //Poprzedni w lewym dolnym rogu
+    if(poprzedzajace.x == 0 && poprzedzajace.z == 0)
+    {
+        //nie miesci sie - wstawione na kolejny poziom
+        if(poprzedzajace.d + pakowane.d > bokPodstawy)
+        {
+            pakowane.x = 0;
+            pakowane.z = 0;
+            pakowane.y = poprzedzajace.y + poprzedzajace.h;
+        }
+        //miesci sie
+        else
+        {
+        pakowane.x = 0;
+        pakowane.z = bokPodstawy - pakowane.d;
+        pakowane.y = poprzedzajace.y;
+        }
+    }
+    //Poprzedni w lewym gornym rogu
+    else if(poprzedzajace.x == 0)
+    {
+        //nie miesci sie - wstawione na kolejny poziom
+        if(poprzedzajace.w + pakowane.w > bokPodstawy ||
+                zapakowane[zapakowane.size() - 2].w + pakowane.w > bokPodstawy ||
+                zapakowane[zapakowane.size() - 2].d + pakowane.d > bokPodstawy)
+        {
+            pakowane.x = 0;
+            pakowane.z = 0;
+            if(poprzedzajace.h < zapakowane[zapakowane.size() - 2].h)
+            {
+                pakowane.y = poprzedzajace.y + zapakowane[zapakowane.size() - 2].h;
+            }
+            else
+            {
+                pakowane.y = poprzedzajace.y + poprzedzajace.h;
+            }
+        }
+        //miesci sie
+        else
+        {
+            pakowane.x = bokPodstawy - pakowane.w;
+            pakowane.z = bokPodstawy - pakowane.d;
+            pakowane.y = poprzedzajace.y;
+        }
+    }
+    //Poprzedni w prawym gornym rogu
+    else if(poprzedzajace.z != 0)
+    {
+        //nie miesci sie - wstawione na kolejny poziom
+        if(poprzedzajace.d + pakowane.d > bokPodstawy ||
+                zapakowane[zapakowane.size() - 2].w + pakowane.w > bokPodstawy ||
+                zapakowane[zapakowane.size() - 2].d + pakowane.d > bokPodstawy ||
+                zapakowane[zapakowane.size() - 3].w + pakowane.w > bokPodstawy)
+        {
+            pakowane.x = 0;
+            pakowane.z = 0;
+            pakowane.y = poprzedzajace.y;
+            int wysokosc = 0;
+            for(unsigned int i = zapakowane.size() - 3; i < zapakowane.size(); ++i)
+            {
+                if(wysokosc < zapakowane[i].h)
+                    wysokosc = zapakowane[i].h;
+            }
+            pakowane.y += wysokosc;
+        }
+        //miesci sie
+        else
+        {
+            pakowane.x = bokPodstawy - pakowane.w;
+            pakowane.z = 0;
+            pakowane.y = poprzedzajace.y;
+        }
+    }
+    //Poprzedni w prawym dolnym rogu - przechodze na kolejny poziom
+    else
+    {
+        pakowane.x = 0;
+        pakowane.z = 0;
+        pakowane.y = poprzedzajace.y;
+        int wysokosc = 0;
+        for(unsigned int i = zapakowane.size() - 4; i < zapakowane.size(); ++i)
+        {
+            if(wysokosc < zapakowane[i].h)
+                wysokosc = zapakowane[i].h;
+        }
+        pakowane.y += wysokosc;
+    }
+}
+
 double Kontener::drzewoPrzeszukiwan()
 {
+    std::cout << "Przeszukuję drzewo rozwiązań..." << std::endl;
+
     for(unsigned int i = 0; i < PudelkadDoZapakowania.size(); ++i)
     {
         std::vector<Pudelko> pusto;
@@ -377,5 +407,10 @@ std::vector<Pudelko> Kontener::dajRezultatNFDH()
 std::vector<Pudelko> Kontener::dajRezultatDrzewa()
 {
     return rezultatDrzewa.first;
+}
+
+std::vector<Pudelko> Kontener::dajRezultatTrywialnego()
+{
+    return rezultatTrywialnego;
 }
 

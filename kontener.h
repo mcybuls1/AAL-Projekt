@@ -18,15 +18,17 @@ public:
     int ustawBokPodstawy(int bok);
     int ustalPozycje(Pudelko i, Pudelko j);
     double nextFitDecreasingHeight(int czyKrokowo);
-    double trywialnyAlgorytm();
+    double trywialnyAlgorytm(int czyKrokowo);
     double objetoscPudelek();
     void zapiszDoPliku(std::vector<Pudelko> doPliku);
     double drzewoPrzeszukiwan();
     std::vector<Pudelko> dajRezultatNFDH();
     std::vector<Pudelko> dajRezultatDrzewa();
+    std::vector<Pudelko> dajRezultatTrywialnego();
 
 private:
     void rekurencja(int nrDoZapakowania, std::vector<Pudelko> doZapakowania, std::vector<Pudelko> zapakowane);
+    void pakujNaroznikami(Pudelko &pakowane, std::vector<Pudelko> &zapakowane);
 
     std::vector<Pudelko> PudelkadDoZapakowania;
     std::vector<Pudelko> rezultatNFDH;

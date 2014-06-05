@@ -4,21 +4,25 @@ Pudelko::Pudelko()
 {
 }
 
-Pudelko::Pudelko(int a, int b, int c)
+Pudelko::Pudelko(int w, int d, int h)
 {
-    this->w = a;
-    this->d = b;
-    this->h = c;
-
+    this->w = w;
+    this->d = d;
+    this->h = h;
+    x = 0;
+    y = 0;
+    z = 0;
 }
 
-std::string Pudelko::toString()
+std::vector<Pudelko> Pudelko::rotacje()
 {
-    std::string toString;
-    toString += w;
-    toString.append(" ");
-    toString += d;
-    toString.append(" ");
-    toString += h;
-    return toString;
+    std::vector<Pudelko> pudelka;
+    pudelka.push_back(Pudelko(w,d,h));
+    pudelka.push_back(Pudelko(d,w,h));
+    pudelka.push_back(Pudelko(h,w,d));
+    pudelka.push_back(Pudelko(h,d,w));
+    pudelka.push_back(Pudelko(d,h,w));
+    pudelka.push_back(Pudelko(w,h,d));
+
+    return pudelka;
 }
