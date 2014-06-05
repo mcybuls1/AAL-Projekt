@@ -234,7 +234,7 @@ void Kontener::zapiszDoPliku(std::vector<Pudelko> doPliku)
 void Kontener::rekurencja(int nrDoZapakowania, std::vector<Pudelko> doZapakowania, std::vector<Pudelko> zapakowane)
 {
     Pudelko pakowane = doZapakowania[nrDoZapakowania];
-
+    doZapakowania.erase(doZapakowania.begin() + nrDoZapakowania);
 
     //Pierwsze
 
@@ -245,11 +245,11 @@ void Kontener::rekurencja(int nrDoZapakowania, std::vector<Pudelko> doZapakowani
         pakowane.y = 0;
         std::vector<Pudelko> pudelka;
         pudelka.push_back(pakowane);
-        doZapakowania.erase(doZapakowania.begin() + nrDoZapakowania);
+
 
         for(unsigned int i = 0; i < doZapakowania.size(); ++i)
         {
-            rekurencja(i, PudelkadDoZapakowania, pudelka);
+            rekurencja(i, doZapakowania, pudelka);
         }
     }
     else
@@ -259,7 +259,7 @@ void Kontener::rekurencja(int nrDoZapakowania, std::vector<Pudelko> doZapakowani
 
         //dodaj do zapakowanych i usun z do zapakowania
         zapakowane.push_back(pakowane);
-        doZapakowania.erase(doZapakowania.begin() + nrDoZapakowania);
+
         //Wszystko zapakowano
         if(doZapakowania.size() == 0)
         {
