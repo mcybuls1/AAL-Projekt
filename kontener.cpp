@@ -233,58 +233,64 @@ void Kontener::zapiszDoPliku(std::vector<Pudelko> doPliku)
 
 void Kontener::rekurencja(int nrDoZapakowania, std::vector<Pudelko> doZapakowania, std::vector<Pudelko> zapakowane)
 {
-    Pudelko pakowane = doZapakowania[nrDoZapakowania];
+    Pudelko doPakowania = doZapakowania[nrDoZapakowania];
     doZapakowania.erase(doZapakowania.begin() + nrDoZapakowania);
 
     //Pierwsze
 
-    if(zapakowane.size() == 0)
+    for (int j = 0; j < 6; ++j)
     {
-        pakowane.x = 0;
-        pakowane.z = 0;
-        pakowane.y = 0;
-        std::vector<Pudelko> pudelka;
-        pudelka.push_back(pakowane);
+        Pudelko pakowane = doPakowania.rotacje().at(j);
+        std::vector<Pudelko> ulozone = zapakowane;
 
-
-        for(unsigned int i = 0; i < doZapakowania.size(); ++i)
+        if(zapakowane.size() == 0)
         {
-            rekurencja(i, doZapakowania, pudelka);
-        }
-    }
-    else
-    {
-        //wyznacz pozycje do zapakowania
-        pakujNaroznikami(pakowane, zapakowane);
+            pakowane.x = 0;
+            pakowane.z = 0;
+            pakowane.y = 0;
+            std::vector<Pudelko> pudelka;
+            pudelka.push_back(pakowane);
 
-        //dodaj do zapakowanych i usun z do zapakowania
-        zapakowane.push_back(pakowane);
 
-        //Wszystko zapakowano
-        if(doZapakowania.size() == 0)
-        {
-            double wysokosc = 0;
-            for(unsigned int i = zapakowane.size() - 4; i < zapakowane.size(); ++i)
+            for(unsigned int i = 0; i < doZapakowania.size(); ++i)
             {
-                if(wysokosc < zapakowane[i].h + zapakowane[i].y)
-                    wysokosc = zapakowane[i].h + zapakowane[i].y;
-            }
-            //Uzyskano lepszy rezultat
-            if(rezultatDrzewa.second > wysokosc || rezultatDrzewa.second == 0)
-            {
-                rezultatDrzewa = std::make_pair(zapakowane, wysokosc);
+                rekurencja(i, doZapakowania, pudelka);
             }
         }
         else
         {
-            for(unsigned int i = 0; i < doZapakowania.size(); ++i)
+            //wyznacz pozycje do zapakowania
+            pakujNaroznikami(pakowane, ulozone);
+
+            //dodaj do zapakowanych
+            ulozone.push_back(pakowane);
+
+            //Wszystko zapakowano
+            if(doZapakowania.size() == 0)
             {
-                //Idziemy w kierunku gorszego rezultatu
-                if(rezultatDrzewa.second < (pakowane.y + pakowane.h) && rezultatDrzewa.second != 0)
+                double wysokosc = 0;
+                for(unsigned int i = ulozone.size() - 4; i < ulozone.size(); ++i)
                 {
-                    return;
+                    if(wysokosc < ulozone[i].h + ulozone[i].y)
+                        wysokosc = ulozone[i].h + ulozone[i].y;
                 }
-                rekurencja(i, doZapakowania, zapakowane);
+                //Uzyskano lepszy rezultat
+                if(rezultatDrzewa.second > wysokosc || rezultatDrzewa.second == 0)
+                {
+                    rezultatDrzewa = std::make_pair(ulozone, wysokosc);
+                }
+            }
+            else
+            {
+                for(unsigned int i = 0; i < doZapakowania.size(); ++i)
+                {
+                    //Idziemy w kierunku gorszego rezultatu
+                    if(rezultatDrzewa.second < (pakowane.y + pakowane.h) && rezultatDrzewa.second != 0)
+                    {
+                        return;
+                    }
+                    rekurencja(i, doZapakowania, ulozone);
+                }
             }
         }
     }
@@ -391,6 +397,9 @@ double Kontener::drzewoPrzeszukiwan()
 
     for(unsigned int i = 0; i < PudelkadDoZapakowania.size(); ++i)
     {
+//        for (int j = 0; j < 6; ++j) {
+
+//        }
         std::vector<Pudelko> pusto;
         rekurencja(i, PudelkadDoZapakowania, pusto);
     }
