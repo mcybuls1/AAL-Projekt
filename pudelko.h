@@ -10,9 +10,9 @@ public:
     Pudelko(int w, int d, int h);
     std::vector<Pudelko> rotacje();
 
-    int x;
-    int z;
-    int y;
+    int x; //x + w
+    int z; //z + d
+    int y; //y + h
     int w; //szerokosc
     int d; //glebokosc
     int h; //wysokosc

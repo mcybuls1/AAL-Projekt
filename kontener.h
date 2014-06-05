@@ -21,6 +21,7 @@ public:
     double trywialnyAlgorytm(int czyKrokowo);
     double objetoscPudelek();
     void zapiszDoPliku(std::vector<Pudelko> doPliku);
+    void zapiszDoPlikuWygenerowane();
     double drzewoPrzeszukiwan();
     std::vector<Pudelko> dajRezultatNFDH();
     std::vector<Pudelko> dajRezultatDrzewa();

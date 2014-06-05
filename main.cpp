@@ -14,7 +14,8 @@ vector<Pudelko> generuj(int ilosc, int maxBok)
 {
     srand(time(NULL));
     vector<Pudelko> pudelka;
-    for (int i = 0; i < ilosc; ++i) {
+    for (int i = 0; i < ilosc; ++i)
+    {
         pudelka.push_back(Pudelko(rand() % maxBok + 1, rand() % maxBok + 1, rand() % maxBok + 1));
     }
     return pudelka;
@@ -31,22 +32,28 @@ int main()
     cin >> skadCzytamyDane;
 
     Kontener kontener;
-    if( skadCzytamyDane == PLIK ) {
+    if( skadCzytamyDane == PLIK )
+    {
         cout << "Podaj nazwę pliku z którego wczytać dane" << endl;
         cin >> nazwaPliku;
         ifstream plikZDanymi;
         plikZDanymi.open(nazwaPliku.c_str());
-        if( plikZDanymi.good() ){
+        if( plikZDanymi.good() )
+        {
             cout << "Pomyslnie wczytano plik!" << endl;
         }
 
         //Wczytywanie danych pudelek do kontenera
-        while( true ) {
+        while( true )
+        {
             int a, b, c;
             plikZDanymi >> a >> b >> c;
-            if( plikZDanymi.good() ){
+            if( plikZDanymi.good() )
+            {
                 kontener.dodajPudelko(Pudelko(a, b, c));
-            } else {
+            }
+            else
+            {
                 break;
             }
         }
@@ -67,7 +74,9 @@ int main()
         cout << "Prosze podać dane w formacie: [ile pudelek wygenerowac] [maksymalna dlugosc boku]" << endl;
         cin >> ile >> dlBoku;
         kontener.ustawPudelkaDoZapakowania(generuj(ile, dlBoku));
-//        kontener.wyswietlPudelka();
+
+        kontener.zapiszDoPlikuWygenerowane();
+
         cout << "Czy wykonać krokowo?" << endl << "0 - nie; 1 - tak" << endl;
         cin >> czyKrokowo;
         cout << "Proszę podać długość boku podstawy (większą lub" <<  endl << "równą najdłuższemu bokowi zadanych pudełek)" << endl;
@@ -81,8 +90,8 @@ int main()
 //ALGORYTM PROSTY
     clock_t czasStart = clock();
     cout << "Wysokosc wg prostego: " << kontener.trywialnyAlgorytm(czyKrokowo) << endl;
-    kontener.zapiszDoPliku(kontener.dajRezultatTrywialnego());
     float czasWykonania = ((float)clock() - czasStart)/CLOCKS_PER_SEC;
+    kontener.zapiszDoPliku(kontener.dajRezultatTrywialnego());
     cout << "Czas wykonania algorytmu trywialnego: " << czasWykonania << " sec"<< endl << endl;
 
     cout << "Proszę wcisnąć enter w celu wykonania algorytmu przeszukiwania" << endl;
@@ -107,6 +116,7 @@ int main()
     kontener.zapiszDoPliku(kontener.dajRezultatNFDH());
     czasWykonania = ((float)clock() - czasStart)/CLOCKS_PER_SEC;
     cout << "Czas wykonania NFDH: " << czasWykonania << " sec"<< endl;
+
     return 0;
 }
 

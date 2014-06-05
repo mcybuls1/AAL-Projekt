@@ -231,18 +231,30 @@ void Kontener::zapiszDoPliku(std::vector<Pudelko> doPliku)
     NowyPlik << "</base>" << std::endl << "</boost_serialization>";
 }
 
+void Kontener::zapiszDoPlikuWygenerowane()
+{
+    std::ofstream NowyPlik;
+    NowyPlik.open("wygenerowane.txt");
+
+    for (unsigned int i = 0; i < PudelkadDoZapakowania.size(); ++i)
+    {
+        Pudelko cuboid = PudelkadDoZapakowania[i];
+        NowyPlik << cuboid.w << " " << cuboid.d << " " << cuboid.h << std::endl;
+    }
+}
+
 void Kontener::rekurencja(int nrDoZapakowania, std::vector<Pudelko> doZapakowania, std::vector<Pudelko> zapakowane)
 {
     Pudelko doPakowania = doZapakowania[nrDoZapakowania];
     doZapakowania.erase(doZapakowania.begin() + nrDoZapakowania);
 
-    //Pierwsze
 
     for (int j = 0; j < 6; ++j)
     {
         Pudelko pakowane = doPakowania.rotacje().at(j);
         std::vector<Pudelko> ulozone = zapakowane;
 
+        //Pierwsze pudełko
         if(zapakowane.size() == 0)
         {
             pakowane.x = 0;
@@ -397,9 +409,6 @@ double Kontener::drzewoPrzeszukiwan()
 
     for(unsigned int i = 0; i < PudelkadDoZapakowania.size(); ++i)
     {
-//        for (int j = 0; j < 6; ++j) {
-
-//        }
         std::vector<Pudelko> pusto;
         rekurencja(i, PudelkadDoZapakowania, pusto);
     }
